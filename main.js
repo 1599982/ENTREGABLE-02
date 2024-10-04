@@ -22,14 +22,26 @@ function repeat(msg, func) {
 }
 
 mom.addEventListener('click', () => {
-    repeat("Eres una Madre?", () => {
-        _mom.classList.toggle('active');
-    });
+    if(!t_mom) {
+        repeat("Eres una Madre?", () => {
+            _mom.classList.toggle('active');
+        });
+        t_mom = true;
+    } else {
+        _mom.classList.remove('active');
+        t_mom = false;
+    }
 })
 
 dad.addEventListener('click', () => {
-    repeat("Eres un Padre?", () => {
-        _dad.classList.toggle('active');
-    });
+    if(!t_dad) {
+        repeat("Eres un Padre?", () => {
+            _dad.classList.toggle('active');
+        });
+        t_dad = true;
+    } else {
+        _dad.classList.remove('active');
+        t_dad = false;
+    }
 })
 
