@@ -40,13 +40,8 @@ header > nav > div {
 header > nav > div:hover {
     border-color: #8c9bdf;
 }
-header > nav > div:hover > .desc {
+header > nav > div > div.active {
     padding: 25px;
-}
-header > nav > div:first-child:hover > .desc {
-    height: 400px;
-}
-header > nav > div:last-child:hover > .desc {
     height: 400px;
 }
 header > nav > div > h2 {
