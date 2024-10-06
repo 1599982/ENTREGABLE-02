@@ -1,47 +1,78 @@
-const mom = document.getElementById('mom');
-const dad = document.getElementById('dad');
+const add_btn = document.getElementById('add-btn');
+const delete_btn = document.getElementById('delete-btn');
 
-const _mom = document.getElementById('desc-mom');
-const _dad = document.getElementById('desc-dad');
+const rows = document.querySelectorAll('.row');
 
+let id = 0;
 
-let t_mom = false;
-let t_dad = false;
-
-function repeat(msg, func) {
-    Swal.fire({
-        title: msg,
-        showCancelButton: true,
-        confirmButtonText: "Si",
-        cancelButtonText: 'No'
-    }).then((result) => {
-        if(result.isConfirmed) {
-            func();
-        }
-    });
+function send(action, data) {
+	fetch(`actions/${action}.php`, {
+		method: 'POST',
+		body: data
+	})
+	.then(response => response.text())
+	.then(data => {
+		if(data === '200')
+			window.location.reload();
+	})
+	.catch(err => console.error(err))
 }
 
-mom.addEventListener('click', () => {
-    if(!t_mom) {
-        repeat("Eres una Madre?", () => {
-            _mom.classList.toggle('active');
-        });
-        t_mom = true;
-    } else {
-        _mom.classList.remove('active');
-        t_mom = false;
-    }
+add_btn.addEventListener('click', async function() {
+	const form = await Swal.fire({
+		icon: 'info',
+		title: 'Añadir nuevo Padre!',
+		html: `
+			<input id="name" class="swal2-input" type="text" placeholder="nombre">
+			<input id="lastname" class="swal2-input" type="text" placeholder="apellido">
+			<select id="genre" class="swal2-input">
+				<option value="f">Femenino</option>
+				<option value="m">Masculino</option>
+			</select>
+		`,
+		showCancelButton: true,
+		confirmButtonText: 'Añadir',
+		cancelButtonText: 'Cancelar',
+		preConfirm: () => {
+			const form_data = new FormData();
+			form_data.append('name', document.getElementById('name').value);
+			form_data.append('lastname', document.getElementById('lastname').value);
+			form_data.append('genre', document.getElementById('genre').value);
+
+			return form_data;
+		}
+	})
+
+	if(!form.isConfirmed)
+		return;
+
+	send('insert', form.value);
 })
 
-dad.addEventListener('click', () => {
-    if(!t_dad) {
-        repeat("Eres un Padre?", () => {
-            _dad.classList.toggle('active');
-        });
-        t_dad = true;
-    } else {
-        _dad.classList.remove('active');
-        t_dad = false;
-    }
+delete_btn.addEventListener('click', function() {
+	if(id === 0)
+		return;
+
+	const form_data = new FormData();
+	form_data.append('id', id);
+
+	send('delete', form_data);
 })
 
+rows.forEach(node => {
+	node.addEventListener('click', function() {
+		selected = Number(this.children[0].value);
+
+		document.querySelector('.active-row')?.classList.remove('active-row');
+
+		if(id === selected) {
+			id = 0;
+			delete_btn.classList.remove('active-btn');
+			return;
+		}
+
+		id = selected;
+		delete_btn.classList.add('active-btn');
+		this.classList.add('active-row')
+	})
+})
